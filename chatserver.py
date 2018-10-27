@@ -8,6 +8,7 @@
 
  References: https://www.bogotobogo.com/python/python_network_programming_tcp_server_client_chat_server_chat_client_select.php
              Lecture 15
+             https://docs.python.org/2/howto/sockets.html
 """
 from socket import *
 import sys
@@ -23,25 +24,21 @@ import select
    takes in message from client and displays with client name
    awaits a response to be entered in and then sends response to client with username
 """
-    """Chat
-    Initiates a chart session with the client
-    Lets them send the first messages
-    """
 
 def chat(connection_socket, clientname, username):
 
     response_msg = ""
    
     while 1:
-    client_msg = connection_socket.recv(501)[0:-1]
+        client_msg = connection_socket.recv(501)[0:-1]
    
-   #check to see if connection was closed
-    if client_msg == "":
-        print "Connection closed"
-        print "Waiting for new connection"
-        break
-    #display to terminal clients name and message formatted according to specs
-    print "{}> {}".format(clientname, client_msg)
+       #check to see if connection was closed
+        if client_msg == "":
+            print "Connection closed"
+            print "Waiting for new connection"
+            break
+        #display to terminal clients name and message formatted according to specs
+        print "{}> {}".format(clientname, client_msg)
 
     
     response_msg = ""
@@ -49,11 +46,11 @@ def chat(connection_socket, clientname, username):
     while len(response_msg) == 0 or len(response_msg) > 500:
         response_msg = raw_input("{}> ".format(username))
         
-    #check to see if server side has decided to quit
-    if response_msg == "\quit":
-        print "Connection closed"
-        print "Waiting for new connection"
-        break
+        #check to see if server side has decided to quit
+        if response_msg == "\quit":
+            print "Connection closed"
+            print "Waiting for new connection"
+            break
 
     #send response message back to client
     connection_socket.send(response_msg)
@@ -77,21 +74,21 @@ def handshake(connection_socket, username):
 
 """
 """
-  def chatServer():
-   #set port to first argument passed in, set up the socket and listen
-   #reference: lecture 15
-   serverport = sys.argv[1]
-   serversocket = socket(AF_INET, SOCK_STREAM)
-   serversocket.bind(('', int(serverport)))
-   serversocket.listen(1)
+def chatServer():
+    #set port to first argument passed in, set up the socket and listen
+    #reference: lecture 15
+    serverport = sys.argv[1]
+    serversocket = socket(AF_INET, SOCK_STREAM)
+    serversocket.bind(('', int(serverport)))
+    serversocket.listen(1)
 
     username = ""
     while len(username) == 0 or len(username) > 10:
-        username = raw_input("Usernames must be a one-word name, up to 10 characters")
+        username = raw_input("Please enter a one-word username, up to 10 characters: ")
         
 
     print "The server is ready to receive"
-   
+
 
     while 1:
         connection_socket, addr = serversocket.accept()
@@ -110,5 +107,5 @@ if __name__ == "__main__":
         print "Incorrect number of arguments"
         exit(1)
 
-    sys.exit(chat_server()) 
+    sys.exit(chatServer()) 
  
