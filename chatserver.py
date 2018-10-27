@@ -27,8 +27,7 @@ import select
 
 def chat(connection_socket, clientname, username):
 
-    response_msg = ""
-   
+     
     while 1:
         client_msg = connection_socket.recv(501)[0:-1]
    
@@ -40,20 +39,19 @@ def chat(connection_socket, clientname, username):
         #display to terminal clients name and message formatted according to specs
         print "{}> {}".format(clientname, client_msg)
 
-    
-    response_msg = ""
-    #message to be sent back is no greater than 500 characters
-    while len(response_msg) == 0 or len(response_msg) > 500:
-        response_msg = raw_input("{}> ".format(username))
-        
+        response_msg = ""
+        #message to be sent back is no greater than 500 characters
+        while len(response_msg) == 0 or len(response_msg) > 500:
+            response_msg = raw_input("{}> ".format(username))
+            
         #check to see if server side has decided to quit
         if response_msg == "\quit":
             print "Connection closed"
             print "Waiting for new connection"
             break
 
-    #send response message back to client
-    connection_socket.send(response_msg)
+        #send response message back to client
+        connection_socket.send(response_msg)
 
 
 """
@@ -92,7 +90,7 @@ def chatServer():
 
     while 1:
         connection_socket, addr = serversocket.accept()
-        print "Chat server started on port  {}".format(addr)
+        print "Chat server started on address  {}".format(addr)
        
         # chat with the incoming connection, handshake with them first
         chat(connection_socket, handshake(connection_socket, username), username)
