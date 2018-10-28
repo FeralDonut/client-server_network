@@ -17,6 +17,13 @@ import select
      
 
 """
+ NAME
+    receiveMessage
+ SYNPOSIS
+    Takes in the connection socket
+ DESCRIPTION
+    extracts the message from the connection socket
+    returns the client message to calling function
 """
 def receiveMessage(connection_socket):
     client_msg = connection_socket.recv(501)[0:-1]
@@ -28,16 +35,18 @@ def receiveMessage(connection_socket):
  SYNPOSIS
     Takes in the connection socket,  username
  DESCRIPTION
-   takes in message from client and displays with client name
-   awaits a response to be entered in and then sends response to client with username
+    Takes users inputted message 
+    Checks to see if the server side quits
+    If not sends the message through the socket
 """
 def sendMessage(connection_socket, username):
         response_msg = ""
-        #message to be sent back is no greater than 500 characters
-        while len(response_msg) == 0 or len(response_msg) > 500:
+        #check that message to be sent back is no greater than 500 characters
+        while len(response_msg) > 500:
             response_msg = raw_input("{}> ".format(username))
             
         #check to see if server side has decided to quit
+        #if they did close the socket
         if response_msg == "\quit":
             print "Connection closed by server"
             connection_socket.close()
@@ -51,9 +60,10 @@ def sendMessage(connection_socket, username):
     handshake
  SYNPOSIS
     Takes in the connection socket and the username
+    Returns the client name that came with the recv
  DESCRIPTION
-    gets the name from the client, sends username to the client and returns
-    client name to calling function
+    gets the name from the client, sends username to the client 
+    returns client name to calling function
 """
 def handshake(connection_socket, username):
     # get the client's name
@@ -63,22 +73,40 @@ def handshake(connection_socket, username):
     return client_name
 
 
+
+"""
+ NAME
+    chat
+ SYNOPSIS
+    takes in the connection_socket from serversocket.accept, the client name and the username
+ DESCRIPTION
+    calls on receiveMessage and will check if the connect was closed by the client
+    prints client message with the client name
+    calls on sendMesage
+"""
 def chat(connection_socket, client_name, username):
      
     while 1:
         client_msg = receiveMessage(connection_socket)
 
-       #check to see if connection was closed
+       #if connection is closed by the client wait for a new connection
         if client_msg == "":
             print "Connection closed"
             print "Waiting for new connection"
             break
-        #display to terminal clients name and message formatted according to specs
+        
         print "{}> {}".format(client_name, client_msg)
 
         sendMessage(connection_socket, username)
 
 """
+ NAME
+    startUp
+ DESCRIPTION
+    sets the port number and serversocket and listens for a client to connect
+    prompts user for username 
+    notifies when the server is ready to receive and notifies when a connection is made and with whom
+    calls the chat function
 """
 def startUp():            
     #set port to first argument passed in, set up the socket and listen
@@ -101,14 +129,13 @@ def startUp():
         client_name = handshake(connection_socket, username)
         print "Ready to chat with {}".format(client_name)
        
-        # chat with the incoming connection, handshake with them first
         chat(connection_socket, client_name, username)
     
    
    
 
 """
-Main
+MAIN
 """
 if __name__ == "__main__":
    
