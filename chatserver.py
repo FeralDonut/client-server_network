@@ -5,7 +5,6 @@
  OSUID: 932962915
  Class: 372-400
  Program 1 chatserver
-
  References: https://www.bogotobogo.com/python/python_network_programming_tcp_server_client_chat_server_chat_client_select.php
              Lecture 15
              https://docs.python.org/2/howto/sockets.html
@@ -41,12 +40,11 @@ def receiveMessage(connection_socket):
 """
 def sendMessage(connection_socket, username):
         response_msg = ""
-        #check that message to be sent back is no greater than 500 characters
-        while len(response_msg) > 500:
+        #message to be sent back is no greater than 500 characters
+        while len(response_msg) == 0 or len(response_msg) > 500:
             response_msg = raw_input("{}> ".format(username))
             
         #check to see if server side has decided to quit
-        #if they did close the socket
         if response_msg == "\quit":
             print "Connection closed by server"
             connection_socket.close()
@@ -73,7 +71,6 @@ def handshake(connection_socket, username):
     return client_name
 
 
-
 """
  NAME
     chat
@@ -89,12 +86,12 @@ def chat(connection_socket, client_name, username):
     while 1:
         client_msg = receiveMessage(connection_socket)
 
-       #if connection is closed by the client wait for a new connection
+       #check to see if connection was closed
         if client_msg == "":
             print "Connection closed"
             print "Waiting for new connection"
             break
-        
+        #display to terminal clients name and message formatted according to specs
         print "{}> {}".format(client_name, client_msg)
 
         sendMessage(connection_socket, username)
@@ -129,13 +126,14 @@ def startUp():
         client_name = handshake(connection_socket, username)
         print "Ready to chat with {}".format(client_name)
        
+        # chat with the incoming connection, handshake with them first
         chat(connection_socket, client_name, username)
     
    
    
 
 """
-MAIN
+Main
 """
 if __name__ == "__main__":
    
@@ -145,4 +143,3 @@ if __name__ == "__main__":
 
     startUp() 
 exit(0)
- 
