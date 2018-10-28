@@ -109,11 +109,14 @@ return 0;
     checks to see if it is a quit
     if not displays to stdout
 */
-
 void receiveMessage(int sockfd, char *servername)
 {
     char server_msg[501];
     int status;
+    //clear out buffer
+    memset(server_msg,0,sizeof(server_msg));
+   //start a new line
+    
     // grab the message from the peer
     status = recv(sockfd, server_msg, 500, 0);
     // if there was an error receiving, exit
@@ -129,20 +132,27 @@ void receiveMessage(int sockfd, char *servername)
         exit(1);
     }else
     { // the message was ok, print it
-        printf("%s> %s", servername, server_msg);
+        printf("%s> %s\n", servername, server_msg);
     }
 
 }
 
-
+/*
+ NAME
+    chat
+ SYNOPSIS
+    takes in sockfd and pointer to username and server name
+ DESCRIPTION
+    initiates chat and runs continuour while loop of
+    sendMessage and receiveMessage
+*/
 void chat(int sockfd, char *username, char *servername){
     // create buffers for input and output
     char clear_stdin[500];
     int message_status;
   
-  //  memset(output,0,sizeof(clear_stdin));
+    memset(clear_stdin,0,sizeof(clear_stdin));
 
-    int status;
     // clear out stdin
     fgets(clear_stdin, 500, stdin);
     while(1)
@@ -161,6 +171,14 @@ void chat(int sockfd, char *username, char *servername){
 
 }
 
+/*
+ NAME
+    handshake
+ SYNOPSIS
+    takes in sockfd and pointer to username and server name
+ DESCRIPTION
+    sends server username and receives the servername and checks for errors
+*/
 void handshake(int sockfd, char *username, char *server_name){
     // send our username to the peer
     int sending_name, client_name;
