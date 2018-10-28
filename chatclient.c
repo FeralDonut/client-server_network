@@ -1,6 +1,13 @@
 /*
-    https://linux.die.net/man/2/send
-    http://beej.us/guide/bgnet/html/single/bgnet.html#closedown
+ Name: Jose-Antonio D. Rubio
+ OSUID: 932962915
+ Class: 372-400
+ Program 1 chatclient
+ References: https://www.bogotobogo.com/python/python_network_programming_tcp_server_client_chat_server_chat_client_select.php
+             Lecture 15
+             https://docs.python.org/2/howto/sockets.html
+             https://linux.die.net/man/2/send
+             http://beej.us/guide/bgnet/html/single/bgnet.html#closedown
 */
 
 
