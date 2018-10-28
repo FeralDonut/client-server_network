@@ -61,19 +61,19 @@ int socketWork(char *host_address, char *port, struct addrinfo *res)
 int sendMessage(int sockfd, char *username)
 {
     int status = 0;
-    char server_msg[501];
+    char client_msg[501];
     // clear out those buffers 
-    memset(server_msg,0,sizeof(server_msg));
+    memset(client_msg,0,sizeof(client_msg));
 
     // grab the input from the user
     printf("%s> ", username);
-    fgets(server_msg, 500, stdin);
+    fgets(client_msg, 500, stdin);
     // if the string is \quit, we close the connection
-    if (strcmp(server_msg, "\\quit\n") == 0){
+    if (strcmp(client_msg, "\\quit\n") == 0){
         return 1;
     }
     // else, we send information to the peer
-    status = send(sockfd, server_msg, strlen(server_msg) ,0);
+    status = send(sockfd, client_msg, strlen(client_msg) ,0);
     // if there was an error, exit
     if(status == -1){
             fprintf(stderr, "Error when sending data to client\n");
@@ -82,18 +82,38 @@ int sendMessage(int sockfd, char *username)
 
 }
 
+void receiveMessage(int sockfd, char *servername)
+{
+    char server_msg[501];
+    int status;
+    // grab the message from the peer
+    status = recv(sockfd, server_msg, 500, 0);
+    // if there was an error receiving, exit
+    if (status == -1){
+        fprintf(stderr, "Error when receiving data from host\n");
+        exit(1);
+    }
+    else if (status == 0){ // the server closed the connection
+        printf("Connection closed by server\n");
+        exit(1);
+    }
+    else{ // the message was ok, print it
+        printf("%s> %s", servername, server_msg);
+    }
+
+}
+
 
 void chat(int sockfd, char *username, char *servername){
     // create buffers for input and output
-    char output[503];
+    char clear_stdin[500];
     int message_status;
   
-    memset(output,0,sizeof(output));
-    // initialize error detectors
-    int num_bytes_sent = 0;
+  //  memset(output,0,sizeof(clear_stdin));
+
     int status;
     // clear out stdin
-    fgets(output, 500, stdin);
+    fgets(clear_stdin, 500, stdin);
     while(1)
     {
         message_status = sendMessage(sockfd, username);
@@ -102,23 +122,8 @@ void chat(int sockfd, char *username, char *servername){
         {
             break;
         }
-        // grab the message from the peer
-        status = recv(sockfd, output, 500, 0);
-        // if there was an error receiving, exit
-        if (status == -1){
-            fprintf(stderr, "Error when receiving data from host\n");
-            exit(1);
-        }
-        else if (status == 0){ // the server closed the connection
-            printf("Connection closed by server\n");
-            break;
-        }
-        else{ // the message was ok, print it
-            printf("%s> %s\n", servername, output);
-        }
-        // clear out the input and output buffers for the next iteration
- //       memset(input,0,sizeof(input));
-   //     memset(output,0,sizeof(output));
+        
+        receiveMessage(sockfd, servername);
     }
     // if we break, we close the connection
     close(sockfd);
@@ -159,19 +164,11 @@ int main(int argc, char *argv[])
     
     getUsername(username);
 
-    // create address information from the arguments passed in by
-    // user
-  //  struct addrinfo * res = create_address_info(argv[1], argv[2], *res);
-    // create a socket from address information
     int sockfd = socketWork(argv[1], argv[2], res);
-    // connect the socket and the address information
-  //  connect_socket(sockfd, *res);
-    // create a peername buffer and exhange username and peername
-    // with peer
-    
+
     handshake(sockfd, username, servername);
-    // chat with peer
+ 
     chat(sockfd, username, servername);
-    // free up the space from address information
+
     freeaddrinfo(res);
 }
